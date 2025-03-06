@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Responsive styling for laptop screens */
+        .chart-section {
+            text-align: center;
+            padding: 20px;
+        }
+
+        label {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        select {
+            font-size: 16px;
+            padding: 5px;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+            max-width: 900px; /* Adjust for laptop resolution */
+            margin: 20px auto;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+
+        /* Media query for laptop screens */
+        @media (max-width: 1440px) {
+            .chart-container {
+                max-width: 800px;
+            }
+        }
+        
+        /* Media query for smaller screens */
+        @media (max-width: 1024px) {
+            .chart-container {
+                max-width: 700px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Chart Section -->
+    <section class="chart-section">
+        <h2>Data Visualization</h2>
+        <label for="datasetSelector">Select Dataset:</label>
+        <select id="datasetSelector">
+            <option value="chartData1">A3SA</option>
+            <option value="chartData2">HD+ TVAPP</option>
+            <option value="chartData3">HD+ IP TVAPP</option>
+        </select>
+        <div class="chart-container">
+            <canvas id="lineChart"></canvas>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sample JSON data
+        const chartData1 = {
+            labels: ["2.4.0", "2.4.1", "2.4.6"],
+            ERROR: [32000, 33000, 31000], 
+            METRIC: [45000, 46000, 47000], 
+            FATAL: [10000, 9, 7],
+            INFO: [4, 5000, 6],
+            WARN: [1, 2, 3000]
+        };
+
+        const chartData2 = {
+            labels: ["2.4.2-prod.196", "2.5.0-prod.205", "3.0.7-prod.33_(1.0.1-prod.275)"],
+            ERROR: [1500, 19000, 1000], 
+            METRIC: [4000, 46000, 47000], 
+            FATAL: [8000, 9, 7],
+            INFO: [4, 5000, 6],
+            WARN: [1, 2, 3000]
+        };
+
+        const chartData3 = {
+            labels: ["3.0.7-prod.13_(1.0.0-prod.10)", "3.0.13-prod.30_(1.0.1-prod.27)"],
+            ERROR: [20000, 330000, 310000], 
+            METRIC: [45000, 46000, 47000], 
+            FATAL: [8000, 9, 7],
+            INFO: [4, 5000, 6],
+            WARN: [1, 2, 3000]
+        };
+
+        // Dictionary to map dropdown values to JSON data
+        const datasets = {
+            chartData1,
+            chartData2,
+            chartData3
+        };
+
+        let selectedData = chartData1;
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        let chart;
+
+        function createChart(data) {
+            if (chart) {
+                chart.destroy(); // Destroy existing chart before creating a new one
+            }
+
+            chart = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        { label: 'ERROR', data: data.ERROR, borderColor: 'blue', backgroundColor: 'rgba(0, 123, 255, 0.5)', fill: false },
+                        { label: 'METRIC', data: data.METRIC, borderColor: 'red', backgroundColor: 'rgba(255, 99, 132, 0.5)', fill: false },
+                        { label: 'FATAL', data: data.FATAL, borderColor: 'green', backgroundColor: 'rgba(75, 192, 192, 0.5)', fill: false },
+                        { label: 'INFO', data: data.INFO, borderColor: 'yellow', backgroundColor: 'rgba(255, 206, 86, 0.5)', fill: false },
+                        { label: 'WARN', data: data.WARN, borderColor: 'purple', backgroundColor: 'rgba(153, 102, 255, 0.5)', fill: false }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('datasetSelector').addEventListener('change', function () {
+            selectedData = datasets[this.value];
+            createChart(selectedData);
+        });
+
+        // Initial Chart Load
+        createChart(selectedData);
+    </script>
+</body>
+</html>
